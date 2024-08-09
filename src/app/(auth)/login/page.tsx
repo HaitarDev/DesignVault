@@ -1,7 +1,11 @@
-import React from "react";
+// import { login, signup } from './actions'
 
-function LoginPage() {
-  return <div>LoginPage</div>;
+import LoginForm from "@/components/login/login-form";
+
+export default function LoginPage() {
+  return (
+    <div className="flex items-center justify-center h-svh bg-amber-50">
+      <LoginForm />
+    </div>
+  );
 }
-
-export default LoginPage;
