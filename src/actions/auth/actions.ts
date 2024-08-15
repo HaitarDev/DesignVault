@@ -51,13 +51,19 @@ export async function signup(formData: FormData) {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
+  const username = formData.get("username") as string;
 
-  const { error } = await supabase.auth.signUp(data);
+  const { error, data: userData } = await supabase.auth.signUp(data);
 
-  if (error) {
+  if (error || !userData.user) {
     redirect("/register");
   }
 
+  const { data: newUser } = await supabase
+    .from("users")
+    .insert({ username, id: userData.user.id });
+
+  console.log(newUser, 11);
   revalidatePath("/", "layout");
   redirect("/confirmUser");
 }

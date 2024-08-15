@@ -6,3 +6,9 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 }
+
+export async function getUserClient() {
+  const user = (await createClient().auth.getUser()).data.user;
+
+  return user;
+}

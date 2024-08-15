@@ -24,7 +24,6 @@ function LoginForm() {
     userData.append("password", data.password);
 
     const loginData = await login(userData);
-    console.log(loginData);
   };
 
   return (
