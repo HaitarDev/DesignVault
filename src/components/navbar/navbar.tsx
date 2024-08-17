@@ -6,7 +6,7 @@ import NavSearch from "./navSearch";
 
 function Navbar() {
   return (
-    <div className=" container p-2 flex items-center justify-between">
+    <div className=" container py-2 flex items-center justify-between">
       <Logo />
       <NavSearch />
       <NavLogin />

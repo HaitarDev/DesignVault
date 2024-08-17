@@ -1,9 +1,8 @@
-import UserUpdateAvatar from "@/components/settings/UserSettingForm";
+import UserUpdateAvatar from "@/components/settings/UserUpdateAvatar";
 import UserUpdateInfo from "@/components/settings/UserUpdateInfo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createClient, getUser } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import React from "react";
 
 async function UserSettingPage({ params }: { params: { user: string } }) {
   const user = await getUser();
@@ -20,7 +19,7 @@ async function UserSettingPage({ params }: { params: { user: string } }) {
     .single();
 
   return (
-    <div className="container mt-20 max-w-screen-lg flex ">
+    <div className="container mt-20 max-w-screen-lg flex justify-center ">
       <div className="flex flex-col  gap-4">
         <div className="flex gap-2 flex-col">
           <h3 className="tracking-widest font-medium text-lg">

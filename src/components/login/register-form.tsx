@@ -95,7 +95,7 @@ function RegisterForm() {
         </div>
         <div className="flex items-center justify-between">
           <Button size={"lg"} disabled={isLoading}>
-            Sign in
+            Sign up
           </Button>
           <Link
             className="inline-block align-baseline font-bold text-sm text-amber-500 hover:text-amber-700"

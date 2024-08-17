@@ -12,19 +12,19 @@ export type Database = {
       collections: {
         Row: {
           created_at: string;
-          id: number;
+          id: string;
           title: string;
           user_id: string | null;
         };
         Insert: {
           created_at?: string;
-          id?: number;
+          id: string;
           title: string;
           user_id?: string | null;
         };
         Update: {
           created_at?: string;
-          id?: number;
+          id?: string;
           title?: string;
           user_id?: string | null;
         };
@@ -46,7 +46,7 @@ export type Database = {
           id: string;
           img_url: string | null;
           liked_count: number | null;
-          title: string;
+          title: string | null;
           user_id: string | null;
         };
         Insert: {
@@ -56,7 +56,7 @@ export type Database = {
           id?: string;
           img_url?: string | null;
           liked_count?: number | null;
-          title: string;
+          title?: string | null;
           user_id?: string | null;
         };
         Update: {
@@ -66,17 +66,10 @@ export type Database = {
           id?: string;
           img_url?: string | null;
           liked_count?: number | null;
-          title?: string;
+          title?: string | null;
           user_id?: string | null;
         };
         Relationships: [
-          {
-            foreignKeyName: "designs_collection_id_fkey";
-            columns: ["collection_id"];
-            isOneToOne: false;
-            referencedRelation: "collections";
-            referencedColumns: ["id"];
-          },
           {
             foreignKeyName: "designs_user_id_fkey";
             columns: ["user_id"];
@@ -88,18 +81,28 @@ export type Database = {
       };
       liked_designs: {
         Row: {
-          design_id: number;
+          design_id: string;
+          isLiked: boolean;
           user_id: string;
         };
         Insert: {
-          design_id: number;
+          design_id: string;
+          isLiked?: boolean;
           user_id: string;
         };
         Update: {
-          design_id?: number;
+          design_id?: string;
+          isLiked?: boolean;
           user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "liked_designs_design_id_fkey";
+            columns: ["design_id"];
+            isOneToOne: true;
+            referencedRelation: "designs";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "liked_designs_user_id_fkey";
             columns: ["user_id"];

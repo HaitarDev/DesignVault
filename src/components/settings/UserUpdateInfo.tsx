@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { UserInfoSchema, userInfoSchema } from "@/schema/info-user-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserInfo } from "@/actions/user/actions";
+import { Input } from "../ui/input";
 
 export default function UserUpdateInfo() {
   const {
@@ -37,8 +38,8 @@ export default function UserUpdateInfo() {
             share.
           </p>
 
-          <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div className="sm:col-span-4">
+          <div className="mt-10">
+            <div className="sm:col-span-4 w-full">
               <label
                 htmlFor="username"
                 className="block text-sm font-medium leading-6 text-gray-900"
@@ -46,17 +47,15 @@ export default function UserUpdateInfo() {
                 Username
               </label>
               <div className="mt-2">
-                <div className="flex rounded-md shadow-sm ring-1 ring-inset  focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-300 sm:max-w-md bg-white">
-                  <input
-                    disabled={isLoading}
-                    id="username"
-                    type="text"
-                    placeholder="janesmith"
-                    autoComplete="username"
-                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 disabled:bg-black/10"
-                    {...register("username")}
-                  />
-                </div>
+                <Input
+                  disabled={isLoading}
+                  id="username"
+                  type="text"
+                  placeholder="janesmith"
+                  autoComplete="username"
+                  className=" py-1.5 pl-1 text-gray-900 ring-1 focus:ring-2 sm:text-sm sm:leading-6 disabled:bg-black/10 w-full"
+                  {...register("username")}
+                />
               </div>
             </div>
           </div>
@@ -75,7 +74,7 @@ export default function UserUpdateInfo() {
             disabled={isLoading}
             id="description"
             rows={3}
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset  focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-300  sm:text-sm sm:leading-6 disabled:bg-black/10"
+            className="block w-full rounded-md border-0 px-1 py-1.5 text-gray-900 shadow-sm ring-1 outline-none   focus:ring-2 sm:text-sm sm:leading-6 disabled:bg-black/10"
             {...register("description")}
           />
         </div>

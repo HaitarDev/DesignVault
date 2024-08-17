@@ -6,6 +6,7 @@ import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import { signOut } from "@/actions/auth/actions";
 import Link from "next/link";
+import CustomAvatar from "../ui/customAvatar";
 
 function NavAvatar({
   user,
@@ -19,10 +20,7 @@ function NavAvatar({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Avatar className="cursor-pointer">
-          <AvatarImage src={avatar ?? ""} />
-          <AvatarFallback>{user.email?.substring(0, 4)}</AvatarFallback>
-        </Avatar>
+        <CustomAvatar src={avatar ?? ""} alt={user.email?.substring(0, 4)} />
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80">
         <div className="flex flex-col gap-2 items-center justify-center">
@@ -35,12 +33,12 @@ function NavAvatar({
         <Separator className="my-2" />
         <div className=" flex flex-col gap-2">
           {/* TODO : LINK */}
-          <Link href={""}>
+          <Link href={"/upload"}>
             <Button className="w-full justify-start" variant={"ghost"}>
               Upload design work
             </Button>
           </Link>
-          <Link href={`${user.id}/settings`}>
+          <Link href={`/${user.id}/settings`}>
             <Button className=" w-full justify-start" variant={"ghost"}>
               Settings
             </Button>

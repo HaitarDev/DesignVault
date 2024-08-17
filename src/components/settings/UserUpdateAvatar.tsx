@@ -5,13 +5,11 @@ import { Button } from "../ui/button";
 import { uploadAvatar } from "@/actions/user/actions";
 import { revalidatePath } from "next/cache";
 import { useFormStatus } from "react-dom";
-import { useRouter } from "next/navigation";
 
 function UserUpdateAvatar() {
   const [startUpload, setStartUpload] = useState(false);
   const { pending } = useFormStatus();
   const ref = useRef<HTMLFormElement>(null);
-  const router = useRouter();
 
   return (
     <div className="">
