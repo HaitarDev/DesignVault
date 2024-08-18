@@ -69,9 +69,9 @@ export const uploadDesignInfo = async (info: Info) => {
 
 export const modifyLikedDesign = async (designId: string) => {
   const supabase = createClient();
-  const session = await getUser();
+  const user = await getUser();
 
-  if (!session) throw new Error("There is no session");
+  if (!user) throw new Error("There is no user");
 
   const { data: design, error: designError } = await supabase
     .from("designs")
@@ -79,11 +79,13 @@ export const modifyLikedDesign = async (designId: string) => {
     .eq("id", designId)
     .single();
 
-  const { error, data: isUserLikedDesign } = await supabase
+  if (designError) throw Error("Error while fetching design");
+
+  const { error: likedError, data: isUserLikedDesign } = await supabase
     .from("liked_designs")
     .select("*")
     .eq("design_id", designId)
-    .eq("user_id", session.id)
+    .eq("user_id", user.id)
     .single();
 
   const isLiked = isUserLikedDesign?.isLiked ? false : true;
@@ -97,7 +99,7 @@ export const modifyLikedDesign = async (designId: string) => {
       .from("liked_designs")
       .insert({
         design_id: designId,
-        user_id: session.id,
+        user_id: user.id,
         isLiked,
       })
       .select("*")
@@ -109,16 +111,18 @@ export const modifyLikedDesign = async (designId: string) => {
       .eq("id", designId);
     return likedDesigs?.isLiked;
   } else {
-    const { data: likedDesigs } = await supabase
+    const { error, data: likedDesigs } = await supabase
       .from("liked_designs")
       .update({
         isLiked,
       })
       .eq("design_id", designId)
-      .eq("user_id", session.id)
+      .eq("user_id", user.id)
       .select("*")
       .single();
 
+    console.log(likedDesigs, error);
+    if (error) throw new Error("error while updating liked_design");
     await supabase.from("designs").update({ liked_count }).eq("id", designId);
 
     return likedDesigs?.isLiked;

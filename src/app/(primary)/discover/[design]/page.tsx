@@ -1,9 +1,9 @@
 import DesignModifyLikedAndBookmarks from "@/components/design/design-modify-liked-and-bookmarks";
 import CustomAvatar from "@/components/ui/customAvatar";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, getUser } from "@/utils/supabase/server";
 
 import Image from "next/image";
-import React from "react";
+
 async function DesignPage({ params }: { params: { design: string } }) {
   const supabase = createClient();
   const { data } = await supabase
@@ -11,6 +11,8 @@ async function DesignPage({ params }: { params: { design: string } }) {
     .select("*, users(*)")
     .eq("id", params.design)
     .single();
+
+  const user = await getUser();
 
   if (!data)
     return (
@@ -31,7 +33,7 @@ async function DesignPage({ params }: { params: { design: string } }) {
             />
             <h6 className="text-base font-medium">{data.users?.username}</h6>
           </div>
-          <DesignModifyLikedAndBookmarks designId={params.design} />
+          <DesignModifyLikedAndBookmarks user={user} designId={params.design} />
         </div>
         <div
           className="bg-slate-50/80 relative aspect-video 
@@ -47,7 +49,7 @@ async function DesignPage({ params }: { params: { design: string } }) {
 
         <p
           className="text-start text-pretty text-lg leading-8
-        tracking-wide"
+          tracking-wide"
         >
           {data.description}
         </p>
