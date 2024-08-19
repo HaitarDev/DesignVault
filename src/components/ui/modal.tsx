@@ -1,4 +1,4 @@
-import { ReactNode, RefAttributes } from "react";
+import { ReactNode } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,14 +7,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { DialogTriggerProps } from "@radix-ui/react-dialog";
 
 function Modal({
   children,
   trigger,
+  title,
+  description,
 }: {
   children: ReactNode;
   trigger: ReactNode;
+  title: string;
+  description: string;
 }) {
   return (
     <Dialog>
@@ -23,10 +26,8 @@ function Modal({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Please login first</DialogTitle>
-          <DialogDescription>
-            you can login from this form or from the login page
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="mx-auto">{children}</div>
       </DialogContent>

@@ -10,6 +10,7 @@ import { User } from "@supabase/supabase-js";
 
 import LoginForm from "../login/login-form";
 import Modal from "../ui/modal";
+import DesignLikedBttn from "./design-liked-bttn";
 
 function DesignModifyLikedAndBookmarks({
   designId,
@@ -19,7 +20,7 @@ function DesignModifyLikedAndBookmarks({
   user: User | null;
 }) {
   const [liked, setIsLiked] = useState<boolean>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
 
   const router = useRouter();
 
@@ -54,46 +55,36 @@ function DesignModifyLikedAndBookmarks({
         },
         async (payload: any) => {
           setIsLiked(payload.new.isLiked);
-          console.log(payload.new.isLiked);
         }
       )
       .subscribe();
   }, [liked]);
 
-  const render = !user ? (
-    <Modal trigger={<Heart fill={liked ? "red" : "white"} />}>
-      <LoginForm />
-    </Modal>
-  ) : (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        try {
-          setIsLoading(true);
-          await modifyLikedDesign(designId);
-        } finally {
-          router.refresh();
-          setIsLoading(false);
-        }
-      }}
-    >
-      <Button className="rounded-full h-10 w-10 p-[7px]" variant={"outline"}>
-        {isLoading ? (
-          <Loader2 className="animate-spin" />
-        ) : (
-          <Heart fill={liked ? "red" : "white"} />
-        )}
-      </Button>
-    </form>
-  );
-
   return (
     <div className="flex gap-2">
-      {render}
+      <DesignLikedBttn designId={designId} liked={liked ?? false} user={user} />
 
-      <Button className="rounded-full h-10 w-10 p-[7px] " variant={"outline"}>
-        <Bookmark size={20} />
-      </Button>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          try {
+            setIsBookmarkLoading(true);
+            await modifyLikedDesign(designId);
+          } finally {
+            router.refresh();
+            setIsBookmarkLoading(false);
+          }
+        }}
+      >
+        <Button className="rounded-full h-10 w-10 p-[7px] " variant={"outline"}>
+          {isBookmarkLoading ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            <Bookmark size={20} />
+          )}
+        </Button>
+      </form>
+
       <Button className="rounded-full">Get in touch</Button>
     </div>
   );
