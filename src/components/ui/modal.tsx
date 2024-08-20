@@ -29,7 +29,7 @@ function Modal({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="mx-auto">{children}</div>
+        <div className="">{children}</div>
       </DialogContent>
     </Dialog>
   );

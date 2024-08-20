@@ -1,16 +1,13 @@
 "use client";
 
-import { Bookmark, Heart, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
-import { modifyLikedDesign } from "@/actions/designs/action";
-import { useRouter } from "next/navigation";
+
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 
-import LoginForm from "../login/login-form";
-import Modal from "../ui/modal";
 import DesignLikedBttn from "./design-liked-bttn";
+import DesignBookmarkBttn from "./design-bookmark-bttn";
 
 function DesignModifyLikedAndBookmarks({
   designId,
@@ -20,28 +17,6 @@ function DesignModifyLikedAndBookmarks({
   user: User | null;
 }) {
   const [liked, setIsLiked] = useState<boolean>();
-  const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    const getIsLiked = async () => {
-      const { error, data } = await createClient()
-        .from("liked_designs")
-        .select("*")
-        .eq("design_id", designId)
-        .eq("user_id", user?.id!)
-        .single();
-
-      if (error) return setIsLiked(false);
-      setIsLiked(data?.isLiked ?? false);
-    };
-
-    if (user) {
-      // Fetch data only if user is logged in
-      getIsLiked();
-    }
-  }, [designId, user]);
 
   useEffect(() => {
     const subscribeChannel = createClient()
@@ -62,28 +37,12 @@ function DesignModifyLikedAndBookmarks({
 
   return (
     <div className="flex gap-2">
-      <DesignLikedBttn designId={designId} liked={liked ?? false} user={user} />
-
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          try {
-            setIsBookmarkLoading(true);
-            await modifyLikedDesign(designId);
-          } finally {
-            router.refresh();
-            setIsBookmarkLoading(false);
-          }
-        }}
-      >
-        <Button className="rounded-full h-10 w-10 p-[7px] " variant={"outline"}>
-          {isBookmarkLoading ? (
-            <Loader2 className="animate-spin" />
-          ) : (
-            <Bookmark size={20} />
-          )}
-        </Button>
-      </form>
+      <DesignLikedBttn designId={designId} user={user} />
+      <DesignBookmarkBttn
+        designId={designId}
+        liked={liked ?? false}
+        user={user}
+      />
 
       <Button className="rounded-full">Get in touch</Button>
     </div>

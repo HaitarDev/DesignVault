@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      collection_designs: {
+        Row: {
+          collection_id: string;
+          created_at: string;
+          design_id: string;
+          id: string;
+        };
+        Insert: {
+          collection_id: string;
+          created_at?: string;
+          design_id: string;
+          id?: string;
+        };
+        Update: {
+          collection_id?: string;
+          created_at?: string;
+          design_id?: string;
+          id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "collection_designs_collection_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "collection_designs_design_id_fkey";
+            columns: ["design_id"];
+            isOneToOne: false;
+            referencedRelation: "designs";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       collections: {
         Row: {
           created_at: string;
@@ -18,7 +54,7 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
-          id: string;
+          id?: string;
           title: string;
           user_id?: string | null;
         };
@@ -47,7 +83,7 @@ export type Database = {
           img_url: string | null;
           liked_count: number | null;
           title: string | null;
-          user_id: string | null;
+          user_id: string;
         };
         Insert: {
           collection_id?: number | null;
@@ -57,7 +93,7 @@ export type Database = {
           img_url?: string | null;
           liked_count?: number | null;
           title?: string | null;
-          user_id?: string | null;
+          user_id: string;
         };
         Update: {
           collection_id?: number | null;
@@ -67,7 +103,7 @@ export type Database = {
           img_url?: string | null;
           liked_count?: number | null;
           title?: string | null;
-          user_id?: string | null;
+          user_id?: string;
         };
         Relationships: [
           {
@@ -81,17 +117,23 @@ export type Database = {
       };
       liked_designs: {
         Row: {
+          created_at: string;
           design_id: string;
+          id: string;
           isLiked: boolean;
           user_id: string;
         };
         Insert: {
+          created_at?: string;
           design_id: string;
+          id?: string;
           isLiked?: boolean;
           user_id: string;
         };
         Update: {
+          created_at?: string;
           design_id?: string;
+          id?: string;
           isLiked?: boolean;
           user_id?: string;
         };
@@ -99,7 +141,7 @@ export type Database = {
           {
             foreignKeyName: "liked_designs_design_id_fkey";
             columns: ["design_id"];
-            isOneToOne: true;
+            isOneToOne: false;
             referencedRelation: "designs";
             referencedColumns: ["id"];
           },

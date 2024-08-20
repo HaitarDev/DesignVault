@@ -128,3 +128,69 @@ export const modifyLikedDesign = async (designId: string) => {
     return likedDesigs?.isLiked;
   }
 };
+
+export const modifyBookmarkDesign = async (designId: string) => {};
+
+export const createCollection = async (title: string) => {
+  try {
+    const user = await getUser();
+    if (!user) throw new Error("There is no user");
+
+    const supabase = createClient();
+
+    const { error, data } = await supabase.from("collections").insert({
+      title,
+      user_id: user.id,
+    });
+    // .select("*");
+
+    if (error) throw new Error("There is an error while creating a collection");
+  } catch (error: any) {
+    console.log(error.message);
+  }
+};
+
+export const insertDesignCollection = async (
+  designId: string,
+  collectionId: string
+) => {
+  if (!collectionId || !designId) return;
+
+  const user = await getUser();
+  if (!user) throw new Error("There is no user");
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("collection_designs")
+      .select("*")
+      .eq("collection_id", collectionId)
+      .eq("design_id", designId)
+      .single();
+
+    if (!data) {
+      await supabase
+        .from("collection_designs")
+        .delete()
+        .eq("design_id", designId);
+
+      const { error, data } = await supabase.from("collection_designs").insert({
+        collection_id: collectionId,
+        design_id: designId,
+      });
+      console.log(error, data, "create");
+      if (error) throw new Error("Error on create a collection designs");
+    } else {
+      const { error, data } = await supabase
+        .from("collection_designs")
+        .delete()
+        .eq("collection_id", collectionId)
+        .eq("design_id", designId);
+
+      console.log(error, data, "update");
+      if (error) throw new Error("Error on delete a collection designs");
+    }
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
