@@ -1,27 +1,31 @@
 "use client";
 
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+
+import DesignUploadImage from "@/components/design/design-upload-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DesignSchema, designSchema } from "@/schema/upload-design-schema";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { uploadDesignInfo } from "@/actions/designs/action";
-import DesignInsertInfo from "@/components/design/design-upload-info";
+import { DesignSchema, designSchema } from "@/schema/upload-design-schema";
+import { X } from "lucide-react";
 
 function UploadPage() {
   const [designId, setDesignId] = useState("");
-
+  const [tagName, setTagName] = useState("");
+  const [newTags, setNewTags] = useState<string[]>([]);
+  const [errorTags, setErrorTags] = useState<string>("");
   const [isShowForm, setShowForm] = useState(false);
+
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { isSubmitting, isSubmitted },
   } = useForm<DesignSchema>({
     resolver: zodResolver(designSchema),
@@ -32,10 +36,12 @@ function UploadPage() {
       designId,
       title: data.title,
       description: data.description,
+      tags: newTags,
     };
     const newDesignId = await uploadDesignInfo(info);
     if (designId) router.push(`/discover/${newDesignId}`);
   }
+
   return (
     <div className="px-4 container max-w-screen-md">
       <form
@@ -51,7 +57,6 @@ function UploadPage() {
           >
             Cancel
           </Button>
-          {/* TODO; LINK OF THE DESIGN */}
           <Button
             type="submit"
             disabled={isSubmitting || isSubmitted}
@@ -101,6 +106,59 @@ function UploadPage() {
         )}
       </form>
 
+      {isShowForm && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            console.log(newTags.length + 1);
+            if (newTags.length + 1 > 5) {
+              return setErrorTags("You have maximum of 5 tags");
+            }
+            setNewTags((prev) => [...prev, tagName]);
+            setTagName("");
+            setErrorTags("");
+          }}
+          className="flex flex-col my-6 gap-2"
+        >
+          <Label htmlFor="tags">Your design tags</Label>
+          <Input
+            value={tagName}
+            onChange={(e) => {
+              if (newTags.length > 5) {
+                return setErrorTags("You have maximum of 5 tags");
+              }
+              setTagName(e.target.value);
+            }}
+            disabled={isSubmitting || isSubmitted}
+            id="tags"
+            type="text"
+            placeholder="cars - computer science - art "
+            className="py-1.5 pl-1 ring-1 focus:ring-2 sm:text-sm sm:leading-6 disabled:bg-black/10"
+          />
+          <div className="flex flex-wrap gap-2 items-center">
+            {newTags.map((tag) => (
+              <Button
+                type="button"
+                className="w-fit"
+                variant={"secondary"}
+                key={tag + Math.random()}
+                onClick={() =>
+                  setNewTags((prev) =>
+                    prev.filter((prevTag) => tag !== prevTag)
+                  )
+                }
+              >
+                {tag.toUpperCase()}
+                <X />
+              </Button>
+            ))}
+          </div>
+          {errorTags !== "" && (
+            <p className="text-xs font-medium text-red-500">{errorTags}</p>
+          )}
+        </form>
+      )}
+
       <div className="mt-8 flex flex-col gap-8">
         <div>
           <label
@@ -110,7 +168,7 @@ function UploadPage() {
             Design photo <span className="text-red-600">*</span>
           </label>
           <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-            <DesignInsertInfo
+            <DesignUploadImage
               setShowForm={setShowForm}
               setDesignId={setDesignId}
               isLoading={isSubmitted || isSubmitting}

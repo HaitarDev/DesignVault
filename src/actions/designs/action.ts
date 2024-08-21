@@ -49,6 +49,7 @@ interface Info {
   designId: string;
   title: string;
   description: string;
+  tags: string[];
 }
 export const uploadDesignInfo = async (info: Info) => {
   const supabase = createClient();
@@ -58,6 +59,7 @@ export const uploadDesignInfo = async (info: Info) => {
     .update({
       title: info.title,
       description: info.description,
+      tags: info.tags,
     })
     .eq("id", info.designId)
     .select("*")

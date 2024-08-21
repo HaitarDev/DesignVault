@@ -6,6 +6,12 @@ import Image from "next/image";
 
 async function DesignPage({ params }: { params: { design: string } }) {
   const supabase = createClient();
+  const { error } = await supabase.rpc("increment", {
+    design_id: params.design,
+  });
+
+  if (error) console.log("Error on increment views");
+
   const { data } = await supabase
     .from("designs")
     .select("*, users(*)")

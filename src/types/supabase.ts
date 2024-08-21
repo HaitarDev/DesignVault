@@ -82,8 +82,10 @@ export type Database = {
           id: string;
           img_url: string | null;
           liked_count: number | null;
+          tags: string[] | null;
           title: string | null;
           user_id: string;
+          views: number;
         };
         Insert: {
           collection_id?: number | null;
@@ -92,8 +94,10 @@ export type Database = {
           id?: string;
           img_url?: string | null;
           liked_count?: number | null;
+          tags?: string[] | null;
           title?: string | null;
           user_id: string;
+          views?: number;
         };
         Update: {
           collection_id?: number | null;
@@ -102,8 +106,10 @@ export type Database = {
           id?: string;
           img_url?: string | null;
           liked_count?: number | null;
+          tags?: string[] | null;
           title?: string | null;
           user_id?: string;
+          views?: number;
         };
         Relationships: [
           {
@@ -191,7 +197,12 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      increment: {
+        Args: {
+          design_id: string;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       [_ in never]: never;
