@@ -3,6 +3,17 @@
 import { userInfoSchema } from "@/schema/info-user-schema";
 import { createClient, getUser } from "@/utils/supabase/server";
 
+export const getUserInfo = async (user_id: string) => {
+  const supabase = createClient();
+  const user = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user_id)
+    .single();
+  const avatar = user.data?.avatar_url ?? user.data?.username.substring(0, 4);
+  return { user, avatar };
+};
+
 export async function uploadAvatar(formData: FormData) {
   const file = formData.get("avatar_img");
 

@@ -8,20 +8,13 @@ import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 
 import { Separator } from "../ui/separator";
-import { createClient } from "@/utils/supabase/client";
+import { createClient, getUserClient } from "@/utils/supabase/client";
 import { CollectionWithDesigns } from "@/types/database";
 import DesignBookmarkTitle from "./design-form-title-bookmark";
 import { insertDesignCollection } from "@/actions/designs/action";
 
-function DesignBookmarkBttn({
-  liked,
-  user,
-  designId,
-}: {
-  designId: string;
-  liked: boolean;
-  user: User | null;
-}) {
+function DesignBookmarkBttn({ designId }: { designId: string }) {
+  const [user, setUser] = useState<User | null>();
   const [collections, setCollections] = useState<CollectionWithDesigns[]>();
   const [rerenderUseEffect, setRerenderUseEffect] = useState<number>(0);
   const [collectionId, setCollectionId] = useState<string>("");
@@ -37,6 +30,16 @@ function DesignBookmarkBttn({
     if (!collection) return;
     setCollectionId(collection.id);
   };
+
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await getUserClient();
+      if (!user) return;
+      setUser(user);
+    };
+    getUser();
+  }, []);
+
   useEffect(() => {
     const getCollections = async () => {
       const { data, error } = await supabase
@@ -53,7 +56,7 @@ function DesignBookmarkBttn({
     <Modal
       title="Login to save a design"
       description="If you have no account go to register page"
-      trigger={<Bookmark fill={liked ? "red" : "white"} />}
+      trigger={<Bookmark />}
     >
       <LoginForm />
     </Modal>
@@ -61,7 +64,7 @@ function DesignBookmarkBttn({
     <Modal
       title="Add this Shot to a collection"
       description="saved it to new collection or an old one"
-      trigger={<Bookmark size={20} />}
+      trigger={<Bookmark />}
     >
       <div className="flex flex-col gap-4">
         <DesignBookmarkTitle setRerenderUseEffect={setRerenderUseEffect} />

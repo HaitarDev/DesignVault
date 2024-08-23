@@ -196,3 +196,40 @@ export const insertDesignCollection = async (
     throw new Error(error.message);
   }
 };
+
+export const getDesigns = async ({
+  followBy,
+  tags,
+  page = 1,
+}: {
+  followBy: string;
+  tags: string[] | null;
+  page?: number;
+}) => {
+  const supabase = createClient();
+  const { data: countData } = await supabase.from("designs").select("*");
+
+  const count = countData?.length;
+  if (!count) return;
+  console.log(count);
+  const designs = supabase.from("designs").select("*, users(*)");
+  // 1) followedBy query
+  followBy === "popular" && designs.order("views", { ascending: false });
+  followBy === "new" && designs.order("created_at", { ascending: false });
+
+  // 2) tags query
+  if (tags && tags.length > 0) designs.overlaps("tags", tags);
+  // 3)fetch more data
+  const limit = 8;
+  const skip = page * limit;
+  const start = skip - limit;
+  console.log(skip);
+  if (skip >= count) {
+    return;
+  }
+  designs.range(start, skip);
+
+  const { data } = await designs;
+
+  return data;
+};

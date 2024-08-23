@@ -21,7 +21,7 @@ function Modal({
 }) {
   return (
     <Dialog>
-      <DialogTrigger className="rounded-full h-10 w-10 p-[7px] bg-background hover:bg-secondary duration-200 transition-colors">
+      <DialogTrigger className="rounded-full h-10 w-10 p-[7px] bg-background hover:bg-secondary duration-200 transition-colors items-center">
         {trigger}
       </DialogTrigger>
       <DialogContent>

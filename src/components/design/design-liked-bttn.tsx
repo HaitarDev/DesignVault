@@ -8,18 +8,17 @@ import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
+import { createClient, getUserClient } from "@/utils/supabase/client";
 
 function DesignLikedBttn({
-  user,
   designId,
+  user,
 }: {
   designId: string;
-  user: User | null;
+  user: User | null | undefined;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [liked, setIsLiked] = useState<boolean>();
-
   const router = useRouter();
 
   useEffect(() => {
