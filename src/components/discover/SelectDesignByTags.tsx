@@ -1,64 +1,69 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { TagsControll } from "@/app/(primary)/discover/page";
+import { Label } from "../ui/label";
 
-type TagsControll = {
-  tags: string[];
-  tagName: string;
-  tagError: string;
-};
-function SelectDesignByTags() {
+function SelectDesignByTags({
+  tags,
+  setTags,
+}: {
+  tags: TagsControll;
+  setTags: Dispatch<SetStateAction<TagsControll>>;
+}) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const [tags, setTags] = useState<TagsControll>({
-    tags: [],
-    tagName: "",
-    tagError: "",
-  });
 
-  console.log(tags);
-  useEffect(() => {
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
+  const handleTagChange = () => {
+    const newSearchParams = new URLSearchParams(searchParams);
     const newValue = tags.tags.join("-");
 
     if (!newValue) {
-      current.delete("tags");
+      newSearchParams.delete("tags");
     } else {
-      current.set("tags", newValue);
+      newSearchParams.set("tags", newValue);
     }
-    const search = current.toString();
+
+    const search = newSearchParams.toString();
     const query = search ? `?${search}` : "";
     router.push(`${pathname}${query}`);
-  }, [tags.tags]);
+  };
+
+  const handleTagSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (tags.tags.length >= 3 || tags.tagName === "") {
+      setTags((prev) => ({
+        ...prev,
+        tagError: "You can't pass an empty or more than 3 tags",
+        tagName: "",
+      }));
+      return; // Prevent further processing if error exists
+    }
+    setTags((prev) => ({
+      ...prev,
+      tags: [...prev.tags, prev.tagName],
+      tagName: "",
+      tagError: "",
+    }));
+
+    handleTagChange(); // Update URL after successful tag update
+  };
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (tags.tags.length >= 3 || tags.tagName == "") {
-          return setTags((prev) => ({
-            ...prev,
-            tagError: "You cant pass an empty or more than 3 tags",
-            tagName: "",
-          }));
-        }
-        setTags((prev) => ({
-          ...prev,
-          tags: [...prev.tags, prev.tagName],
-          tagName: "",
-        }));
-      }}
-      className="flex flex-col my-6 gap-2"
-    >
+    <form onSubmit={handleTagSubmit} className="flex flex-col my-6 gap-2">
+      <Label>Search by tags:</Label>
       <Input
         value={tags.tagName}
         onChange={(e) => {
           setTags((prev) => ({
             ...prev,
             tagName: e.target.value,
+            tagError: "",
           }));
         }}
         id="tags"
@@ -78,6 +83,7 @@ function SelectDesignByTags() {
               setTags((prev) => ({
                 ...prev,
                 tags: prev.tags.filter((oldTag) => oldTag !== tag),
+                tagName: "",
               }))
             }
           >

@@ -42,7 +42,7 @@ async function DesignPage({ params }: { params: { design: string } }) {
           <DesignModifyLikedAndBookmarks user={user} designId={params.design} />
         </div>
         <div
-          className="bg-slate-50/80 relative aspect-video 
+          className="bg-slate-50/80 relative aspect-video
           h-[34rem] rounded-lg"
         >
           <Image

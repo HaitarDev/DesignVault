@@ -95,24 +95,36 @@ export const modifyLikedDesign = async (designId: string) => {
   const prevCount = design?.liked_count ?? 0;
   const liked_count = isLiked ? prevCount + 1 : prevCount - 1;
 
-  console.log(prevCount, liked_count, isLiked);
+  // uf no record add one
   if (isUserLikedDesign === null) {
     const { error, data: likedDesigs } = await supabase
       .from("liked_designs")
       .insert({
         design_id: designId,
         user_id: user.id,
-        isLiked,
+        isLiked: true,
       })
       .select("*")
       .single();
 
-    const { data: designs } = await supabase
+    const { data: newDesignRecord } = await supabase
       .from("designs")
-      .update({ liked_count: isLiked ? prevCount + 1 : prevCount })
-      .eq("id", designId);
-    return likedDesigs?.isLiked;
-  } else {
+      .update({ liked_count: prevCount + 1 })
+      .eq("id", designId)
+      .select("liked_count")
+      .single();
+
+    console.log({
+      isLiked: likedDesigs?.isLiked,
+      liked_count: newDesignRecord?.liked_count,
+    });
+    return {
+      isLiked: likedDesigs?.isLiked,
+      liked_count: newDesignRecord?.liked_count,
+    };
+  }
+  // if there is record update it based on if user press liked
+  else {
     const { error, data: likedDesigs } = await supabase
       .from("liked_designs")
       .update({
@@ -120,14 +132,25 @@ export const modifyLikedDesign = async (designId: string) => {
       })
       .eq("design_id", designId)
       .eq("user_id", user.id)
-      .select("*")
+      .select("isLiked")
       .single();
 
-    console.log(likedDesigs, error);
     if (error) throw new Error("error while updating liked_design");
-    await supabase.from("designs").update({ liked_count }).eq("id", designId);
+    const { data: newDesignRecord } = await supabase
+      .from("designs")
+      .update({ liked_count })
+      .eq("id", designId)
+      .select("liked_count")
+      .single();
 
-    return likedDesigs?.isLiked;
+    console.log({
+      isLiked: likedDesigs?.isLiked,
+      liked_count: newDesignRecord?.liked_count,
+    });
+    return {
+      isLiked: likedDesigs?.isLiked,
+      liked_count: newDesignRecord?.liked_count,
+    };
   }
 };
 
@@ -140,13 +163,16 @@ export const createCollection = async (title: string) => {
 
     const supabase = createClient();
 
-    const { error, data } = await supabase.from("collections").insert({
-      title,
-      user_id: user.id,
-    });
-    // .select("*");
+    const { error, data } = await supabase
+      .from("collections")
+      .insert({
+        title,
+        user_id: user.id,
+      })
+      .select("*");
 
     if (error) throw new Error("There is an error while creating a collection");
+    return data;
   } catch (error: any) {
     console.log(error.message);
   }
@@ -200,22 +226,22 @@ export const insertDesignCollection = async (
 export const getDesigns = async ({
   followBy,
   tags,
-  page = 1,
+  page,
 }: {
   followBy: string;
   tags: string[] | null;
-  page?: number;
+  page: number;
 }) => {
   const supabase = createClient();
   const { data: countData } = await supabase.from("designs").select("*");
 
   const count = countData?.length;
   if (!count) return;
-  console.log(count);
   const designs = supabase.from("designs").select("*, users(*)");
   // 1) followedBy query
-  followBy === "popular" && designs.order("views", { ascending: false });
-  followBy === "new" && designs.order("created_at", { ascending: false });
+  if (followBy === "popular") designs.order("views", { ascending: false });
+  else if (followBy === "new")
+    designs.order("created_at", { ascending: false });
 
   // 2) tags query
   if (tags && tags.length > 0) designs.overlaps("tags", tags);
@@ -223,13 +249,26 @@ export const getDesigns = async ({
   const limit = 8;
   const skip = page * limit;
   const start = skip - limit;
-  console.log(skip);
   if (skip >= count) {
     return;
   }
-  designs.range(start, skip);
 
-  const { data } = await designs;
+  const nextPage = page + 1;
 
-  return data;
+  const { data } = await designs.range(start, skip);
+  console.log(data);
+  return { data, nextPage };
 };
+
+// export const getDesignsLikedCount = async (designId: string) => {
+//   const supabase = createClient();
+
+//   const { data, error } = await supabase
+//     .from("designs")
+//     .select("liked_count")
+//     .eq("id", designId)
+//     .single();
+//   if (error) throw new Error("Cant get Liked Design Count !!");
+
+//   return data.liked_count;
+// };

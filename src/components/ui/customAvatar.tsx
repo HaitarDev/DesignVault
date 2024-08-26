@@ -7,7 +7,7 @@ function CustomAvatar({
 }: {
   src: string;
   alt?: string;
-  size: number;
+  size?: number;
 }) {
   return (
     <Avatar className={`cursor-pointer h-${12} w-${12}`}>

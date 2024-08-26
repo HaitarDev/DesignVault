@@ -9,7 +9,9 @@ export function createClient() {
 }
 
 export async function getUserClient() {
-  const user = (await createClient().auth.getUser()).data.user;
+  const supabase = createClient();
 
-  return user;
+  const { data, error } = await supabase.auth.getUser();
+
+  return data.user;
 }
