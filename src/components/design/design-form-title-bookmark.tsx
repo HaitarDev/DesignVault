@@ -1,15 +1,11 @@
 import { createCollection } from "@/actions/designs/action";
-import React, { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-function DesignBookmarkTitle({
-  setRerenderUseEffect,
-}: {
-  setRerenderUseEffect: Dispatch<SetStateAction<number>>;
-}) {
+function DesignBookmarkTitle() {
   const {
     register,
     handleSubmit,
@@ -19,10 +15,17 @@ function DesignBookmarkTitle({
     defaultValues: { title: "" },
   });
 
-  const submitCreateCollection = async (data: { title: string }) => {
+  const query = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: async (title: string) => await createCollection(title),
+    onSuccess: () => {
+      query.invalidateQueries({ queryKey: ["collections"] });
+    },
+  });
+
+  const submitCreateCollection = (data: { title: string }) => {
     if (!data.title) return;
-    await createCollection(data.title);
-    setRerenderUseEffect((prev) => prev + 1);
+    mutate(data.title);
     reset();
   };
 

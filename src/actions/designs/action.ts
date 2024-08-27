@@ -184,9 +184,10 @@ export const insertDesignCollection = async (
 ) => {
   if (!collectionId || !designId) return;
 
+  console.log(collectionId, designId);
   const user = await getUser();
   if (!user) throw new Error("There is no user");
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     const { data, error } = await supabase
@@ -256,7 +257,6 @@ export const getDesigns = async ({
   const nextPage = page + 1;
 
   const { data } = await designs.range(start, skip);
-  console.log(data);
   return { data, nextPage };
 };
 

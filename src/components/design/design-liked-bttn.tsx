@@ -12,12 +12,20 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/hooks/useUser";
 import { useCountLikedDesign } from "@/hooks/useCountLikedDesign";
 
-function DesignLikedBttn({ designId }: { designId: string }) {
+function DesignLikedBttn({
+  designId,
+  largeLiked = false,
+  hideLikedCount = false,
+}: {
+  designId: string;
+  largeLiked?: boolean;
+  hideLikedCount?: boolean;
+}) {
   const { data: user } = useUser();
   const pathname = usePathname();
 
   // change UI of liked icon in discover page vs discover/designId page based on the params
-  const isDesignInfoPage = pathname === `/discover/${designId}`;
+  const isDesignInfoPage = pathname === `/discover/${designId}` || largeLiked;
 
   const { isLoading: isLoadingLiked, data: likedDesign } =
     useLikedDesign(designId);
@@ -98,9 +106,11 @@ function DesignLikedBttn({ designId }: { designId: string }) {
           </div>
         </form>
       )}
-      <p className="text-gray-500 text-xs sm:text-sm">
-        {isLoadingCount ? 0 : likedCount?.likedCount}
-      </p>
+      {!hideLikedCount && (
+        <p className="text-gray-500 text-xs sm:text-sm">
+          {isLoadingCount ? 0 : likedCount?.likedCount}
+        </p>
+      )}
     </div>
   );
   return <div>{render}</div>;
